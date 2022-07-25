@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "dbuser",
+    "password": "secret",
+    "database": "tododb",
+    "host": "db",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "dbuser",
+    "password": "secret",
+    "database": "tododb",
+    "host": "db",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "dbuser",
+    "password": "secret",
+    "database": "tododb",
+    "host": "db",
+    "dialect": "mysql"
+  }
+}

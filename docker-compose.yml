@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+  front:
+    container_name: front
+
+    build:
+      context: .
+      dockerfile: ./infra/front/Dockerfile
+
+    environment:
+      - NODE_ENV=development
+      - REACT_DOMAIN=http://localhost:3000/development/
+
+    volumes:
+      - ./front:/usr/src/app/front:delegated
+      - ./front/node_modules:/usr/src/app/front/node_modules:delegated
+
+    working_dir: /usr/src/app/front
+
+    ports:
+      - '80:80'
+
+    tty: true
+
+  api:
+    container_name: api
+
+    build:
+      context: .
+      dockerfile: ./infra/api/Dockerfile
+
+    environment:
+      - NODE_ENV=development
+      - MYSQL_SERVER=db
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+      - MYSQL_DATABASE=${DB_NAME}
+      - TZ=${TZ}
+
+    volumes:
+      - ./api:/usr/src/app/api:delegated
+      - ./api/node_modules:/usr/src/app/api/node_modules:delegated
+
+    working_dir:
+      /usr/src/app/api
+
+    ports:
+      - '3000:3000'
+
+    tty: true
+
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+
+    container_name: db
+
+    volumes:
+      - ./infra/db/data:/var/lib/mysql:delegated
+      - ./infra/db/initdb.d:/docker-entrypoint-initdb.d:delegated
+      - ./infra/db/my.cnf:/etc/mysql/conf.d/my.cnf:delegated
+
+    command:
+      --default-authentication-plugin=mysql_native_password --default-time-zone=Asia/Tokyo
+
+    environment:
+      - MYSQL_ROOT_HOST=${DB_HOST}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+      - MYSQL_ROOT_PASSWORD=${DB_PASS}
+      - TZ=${TZ}
+
+    ports:
+      - '3306:3306'
